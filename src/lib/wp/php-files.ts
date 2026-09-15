@@ -50,7 +50,13 @@ function kebab(s: string): string {
   return s.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
+/** PHP identifiers can't contain hyphens, so derive an underscore-safe prefix. */
+function phpPrefix(textDomain: string): string {
+  return textDomain.replace(/[^a-zA-Z0-9_]/g, "_");
+}
+
 export function functionsPhp(textDomain: string): string {
+  const fn = phpPrefix(textDomain);
   return `<?php
 /**
  * ${textDomain} — theme functions.
@@ -59,8 +65,8 @@ export function functionsPhp(textDomain: string): string {
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if ( ! function_exists( '${textDomain}_setup' ) ) {
-    function ${textDomain}_setup() {
+if ( ! function_exists( '${fn}_setup' ) ) {
+    function ${fn}_setup() {
         load_theme_textdomain( '${textDomain}', get_template_directory() . '/languages' );
         add_theme_support( 'title-tag' );
         add_theme_support( 'post-thumbnails' );
@@ -71,10 +77,11 @@ if ( ! function_exists( '${textDomain}_setup' ) ) {
         add_editor_style( 'style.css' );
     }
 }
-add_action( 'after_setup_theme', '${textDomain}_setup' );
+add_action( 'after_setup_theme', '${fn}_setup' );
 
-if ( ! function_exists( '${textDomain}_enqueue_styles' ) ) {
-    function ${textDomain}_enqueue_styles() {
+if ( ! function_exists( '${fn}_enqueue_styles' ) ) {
+    function ${fn}_enqueue_styles() {
+        if ( is_admin() ) { return; }
         $version = wp_get_theme()->get( 'Version' );
         wp_enqueue_style(
             '${textDomain}-style',
@@ -85,13 +92,62 @@ if ( ! function_exists( '${textDomain}_enqueue_styles' ) ) {
         wp_add_inline_style( '${textDomain}-style', ':root { color-scheme: light; }' );
     }
 }
-add_action( 'wp_enqueue_scripts', '${textDomain}_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', '${fn}_enqueue_styles' );
+
+/**
+ * Emit favicon links pointing at theme-bundled icons so the browser never
+ * hits the origin-root /favicon.ico (which surfaces as a spurious 500 on
+ * some hosts and pollutes the dev console after theme activation).
+ */
+if ( ! function_exists( '${fn}_favicon_links' ) ) {
+    function ${fn}_favicon_links() {
+        // Respect an admin-configured Site Icon if one exists.
+        if ( function_exists( 'has_site_icon' ) && has_site_icon() ) { return; }
+        $uri = get_stylesheet_directory_uri();
+        echo '<link rel="icon" href="' . esc_url( $uri . '/favicon.ico' ) . '" sizes="any">' . "\n";
+        echo '<link rel="icon" href="' . esc_url( $uri . '/assets/icon.svg' ) . '" type="image/svg+xml">' . "\n";
+        echo '<link rel="apple-touch-icon" href="' . esc_url( $uri . '/assets/icon.svg' ) . '">' . "\n";
+    }
+}
+add_action( 'wp_head', '${fn}_favicon_links', 5 );
+add_action( 'admin_head', '${fn}_favicon_links', 5 );
+add_action( 'login_head', '${fn}_favicon_links', 5 );
+
+/**
+ * Silence the harmless "AbortError: Transition was skipped" that WordPress
+ * core 6.x can raise in the browser console after themes.php?activated=true
+ * when an in-flight View Transition is aborted by the admin redirect. We add
+ * a one-shot admin unhandledrejection listener that swallows only that
+ * specific rejection - every other rejection still bubbles up unchanged.
+ */
+if ( ! function_exists( '${fn}_swallow_view_transition_abort' ) ) {
+    function ${fn}_swallow_view_transition_abort() {
+        ?>
+<script>
+(function () {
+  if (typeof window === 'undefined') return;
+  window.addEventListener('unhandledrejection', function (event) {
+    var reason = event && event.reason;
+    if (!reason) return;
+    var name = reason.name || '';
+    var msg = (reason.message || String(reason) || '').toLowerCase();
+    if (name === 'AbortError' && msg.indexOf('transition was skipped') !== -1) {
+      event.preventDefault();
+    }
+  });
+})();
+</script>
+        <?php
+    }
+}
+add_action( 'admin_print_footer_scripts', '${fn}_swallow_view_transition_abort', 1 );
+add_action( 'wp_print_footer_scripts',    '${fn}_swallow_view_transition_abort', 1 );
 
 /**
  * Register additional block styles that the theme.json cannot express directly.
  */
-if ( ! function_exists( '${textDomain}_register_block_styles' ) ) {
-    function ${textDomain}_register_block_styles() {
+if ( ! function_exists( '${fn}_register_block_styles' ) ) {
+    function ${fn}_register_block_styles() {
         register_block_style(
             'core/quote',
             array(
@@ -108,32 +164,32 @@ if ( ! function_exists( '${textDomain}_register_block_styles' ) ) {
         );
     }
 }
-add_action( 'init', '${textDomain}_register_block_styles' );
+add_action( 'init', '${fn}_register_block_styles' );
 
 /**
  * Register patterns categories so the Site Editor exposes theme patterns.
  */
-if ( ! function_exists( '${textDomain}_register_pattern_categories' ) ) {
-    function ${textDomain}_register_pattern_categories() {
+if ( ! function_exists( '${fn}_register_pattern_categories' ) ) {
+    function ${fn}_register_pattern_categories() {
         if ( ! function_exists( 'register_block_pattern_category' ) ) { return; }
         register_block_pattern_category( '${textDomain}', array( 'label' => __( 'Cozy patterns', '${textDomain}' ) ) );
     }
 }
-add_action( 'init', '${textDomain}_register_pattern_categories' );
+add_action( 'init', '${fn}_register_pattern_categories' );
 
 /**
  * Skip-link injected for keyboard users. WP core already adds one on FSE themes,
  * but we harden it to always point at #wp--skip-link--target.
  */
-if ( ! function_exists( '${textDomain}_skip_link' ) ) {
-    function ${textDomain}_skip_link() {
+if ( ! function_exists( '${fn}_skip_link' ) ) {
+    function ${fn}_skip_link() {
         printf(
             '<a class="skip-link screen-reader-text" href="#wp--skip-link--target">%s</a>',
             esc_html__( 'Skip to content', '${textDomain}' )
         );
     }
 }
-add_action( 'wp_body_open', '${textDomain}_skip_link' );
+add_action( 'wp_body_open', '${fn}_skip_link' );
 `;
 }
 

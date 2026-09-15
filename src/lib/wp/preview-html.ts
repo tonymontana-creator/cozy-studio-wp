@@ -10,6 +10,7 @@
 
 import type { DesignSystem, PageDef, PageSection, SiteBrief } from "./types";
 import { spaceScaleRem, typeScaleRem } from "./design-system";
+import { buildFaviconDataUri } from "./favicon";
 
 function esc(s: string): string {
   return String(s)
@@ -221,6 +222,7 @@ export function renderPreviewHtml(brief: SiteBrief, design: DesignSystem, pages:
 <meta property="og:description" content="${description}"/>
 <meta property="og:type" content="website"/>
 <meta name="theme-color" content="${design.palette.background}"/>
+<link rel="icon" href="${buildFaviconDataUri(design.palette)}" type="image/svg+xml"/>
 <script type="application/ld+json">${JSON.stringify(structuredData)}</script>
 ${styleBlock(design)}
 </head>

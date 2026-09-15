@@ -110,7 +110,8 @@ export type A11yReport = {
 
 export type WpFile = {
   path: string; // relative to theme root, e.g. "theme.json"
-  content: string;
+  content: string | Uint8Array;
+  binary?: boolean; // true for binary payloads (e.g. favicon.ico)
 };
 
 export type WpTheme = {

@@ -35,6 +35,7 @@ const SRC_TESTS = [
   "src/lib/studio/run-failure.test.ts",
   "src/lib/studio/recents.test.ts",
   "src/lib/studio/profile.test.ts",
+  "src/lib/wp/wp-generator.test.ts",
 ];
 
 function runPlatformTests() {

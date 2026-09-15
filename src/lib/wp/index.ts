@@ -31,6 +31,7 @@ import {
   screenshotSvg,
   styleCss,
 } from "./php-files";
+import { buildFaviconIco, buildIconSvg } from "./favicon";
 import { potFile, skPoFile } from "./i18n";
 import { auditA11y, auditSeo } from "./seo-a11y";
 import { renderPreviewHtml } from "./preview-html";
@@ -72,6 +73,8 @@ function buildFiles(
 ): WpFile[] {
   const files: WpFile[] = [];
   const push = (path: string, content: string) => files.push({ path, content });
+  const pushBinary = (path: string, content: Uint8Array) =>
+    files.push({ path, content, binary: true });
 
   push("style.css", styleCss(brief, design, textDomain, version));
   push("theme.json", JSON.stringify(buildThemeJson(design, brief), null, 2));
@@ -79,6 +82,11 @@ function buildFiles(
   push("index.php", indexPhp());
   push("readme.txt", readmeTxt(brief, textDomain, version));
   push("screenshot.svg", screenshotSvg(brief, design));
+  // Ship a real favicon.ico + SVG icon so the browser never falls back to
+  // requesting /favicon.ico from the origin root (which surfaces as a 500 on
+  // some hosts and clutters the dev console after theme activation).
+  pushBinary("favicon.ico", buildFaviconIco(design.palette));
+  push("assets/icon.svg", buildIconSvg(design.palette));
 
   push("parts/header.html", headerHtml(brief, pages));
   push("parts/footer.html", footerHtml(brief));
@@ -207,6 +215,12 @@ export function bundleThemeZip(theme: WpTheme): Blob {
     content: f.content,
   }));
   return buildZip(entries);
+}
+
+/** Node-safe theme bundling helper used by scripts (returns a Buffer-compatible Uint8Array). */
+export async function bundleThemeBytes(theme: WpTheme): Promise<Uint8Array> {
+  const blob = bundleThemeZip(theme);
+  return new Uint8Array(await blob.arrayBuffer());
 }
 
 export function listDesignPresets(): { id: string; label: string; palette: DesignSystem["palette"] }[] {
