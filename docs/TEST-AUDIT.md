@@ -1,6 +1,6 @@
 # Test audit — Cozy AI Studio
 
-**Date:** 2026-09-20 (all-green pass)
+**Date:** 2026-09-20 (all-green pass, warnings cleared)
 **Host:** Linux sandbox / Node v22.12.0 / npm 10.9.0
 **Auth:** `VITE_AUTH_ENABLED=false` via `.grok/app-env.json` (localStorage only)
 
@@ -10,7 +10,7 @@
 |------|---------|------|-------|
 | Auth invariant | `npm run check:auth` | needs dev | Static invariant covered by unit tests |
 | Typecheck | `npm run typecheck` | **0** | via `test:audit` |
-| Lint | `npm run lint` | **0** | 0 errors, 3 known warnings (below) |
+| Lint | `npm run lint` | **0** | 0 errors, 0 warnings |
 | Unit | `npm run test:unit` | **0** | 70 tests / 16 suites |
 | Platform | `npm run test:platform` | **0** | 70 tests / 16 suites — brand / grok-pwa / write-atomic |
 | E2E | `npm run test:e2e` | **0** | 3 passed (~12–25 s) |
@@ -87,19 +87,27 @@ so ESLint (`no-duplicate-case`) is clean and behavior is unchanged
 `npm run wp:smoke` / `wp:audit` / `wp:sample` all `tsx scripts/…` but
 `tsx` was not in `devDependencies`. Added `tsx@^4`.
 
-## Known warnings (out of scope, non-blocking)
+## Warnings cleared this pass
 
-1. `src/components/studio/StudioShell.tsx` — `react-hooks/exhaustive-deps`
-   on `openRecent`. The effect owns a `handledRecentRef` guard, so adding
-   `openRecent` to the dep array would re-fire the recent-open flow
-   whenever the memoized callback identity changed. Intentional.
-2. `src/components/ui/button.tsx` — `react-refresh/only-export-components`.
-   The file also exports `buttonVariants`; splitting it would break every
-   consumer that imports the constant alongside the component. Intentional.
-3. `src/lib/auth/use-current-user.ts` — `Unused eslint-disable directive`.
-   The disable comment silences a legitimate rules-of-hooks flag under a
-   constant-guard shape; the plugin sometimes doesn’t report on this
-   configuration. Left in place to keep the guardrail explicit.
+All three previously accepted lint warnings are gone as of this audit:
+
+1. **`src/components/ui/button.tsx`** — `react-refresh/only-export-components`.
+   Extracted `buttonVariants` (and its `ButtonVariants` type) into
+   `src/components/ui/button-variants.ts`. `button.tsx` now exports the
+   component and its `ButtonProps` interface only, so Fast Refresh
+   preserves state across edits. `AccountPage.tsx` and `routes/index.tsx`
+   were updated to import `buttonVariants` from the new module.
+2. **`src/components/studio/StudioShell.tsx`** — `react-hooks/exhaustive-deps`
+   on `openRecent`. The recent-open effect now inlines the branch it used
+   to reach through `openRecent()`, so it no longer closes over that
+   render-scoped function. `handledRecentRef` remains as the per-id
+   idempotency guard. A narrowly-scoped `eslint-disable-next-line` for
+   `run` / setters (which are all render-stable but the rule can’t prove
+   it) is documented in place.
+3. **`src/lib/auth/use-current-user.ts`** — `Unused eslint-disable directive`.
+   Removed the disable comment. The `authEnabled` module-level constant
+   still keeps hook order stable across every render for the guarded
+   `authClient.useSession()` call; the rule does not flag the shape.
 
 ## Still out of scope
 

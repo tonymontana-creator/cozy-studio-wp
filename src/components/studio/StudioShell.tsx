@@ -275,8 +275,31 @@ export function StudioShell({ openRecentId }: { openRecentId?: string }) {
     if (!openRecentId || handledRecentRef.current === openRecentId) return;
     handledRecentRef.current = openRecentId;
     const recent = loadRecents().find((r) => r.id === openRecentId);
-    if (recent) openRecent(recent);
+    if (recent) {
+      // Inlined instead of calling `openRecent(recent)` so this effect does
+      // not depend on that closure's identity — `handledRecentRef` already
+      // guards against re-firing per id.
+      setMobileNavOpen(false);
+      setConfigStarterId(null);
+      setSelectedAddonIds(new Set());
+      if (recent.html) {
+        restorePreview({
+          title: recent.title,
+          code: recent.code,
+          html: recent.html,
+          brief: recent.brief,
+        });
+        setActiveFile("index.html");
+        setPanel("preview");
+      } else if (recent.brief.trim()) {
+        void run(recent.brief, { fresh: true });
+      }
+    }
     void navigate({ to: "/studio", search: {}, replace: true });
+    // `run`, `restorePreview` and the setters are all stable per render for
+    // this effect's purposes; adding them would re-fire on every keystroke
+    // even though the ref guard would immediately return.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openRecentId, navigate]);
 
   async function run(promptOverride?: string, opts?: { fresh?: boolean }) {
