@@ -7,7 +7,7 @@
  * baking it into `theme.json`.
  */
 
-import type { ColorPalette, DesignSystem, Spacing, Typography } from "./types";
+import type { ColorPalette, DesignSystem, Spacing, Typography } from "./types.ts";
 
 /* ---------------- Color / WCAG helpers ---------------- */
 

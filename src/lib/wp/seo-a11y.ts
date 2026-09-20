@@ -7,8 +7,8 @@
  * render as a panel. Failure hints are actionable, not generic.
  */
 
-import { contrastRatio, meetsAA } from "./design-system";
-import type { A11yReport, DesignSystem, PageDef, SeoReport, SiteBrief } from "./types";
+import { contrastRatio, meetsAA } from "./design-system.ts";
+import type { A11yReport, DesignSystem, PageDef, SeoReport, SiteBrief } from "./types.ts";
 
 export function auditSeo(brief: SiteBrief, pages: PageDef[]): SeoReport {
   const checks: SeoReport["checks"] = [];

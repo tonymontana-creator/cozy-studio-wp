@@ -8,8 +8,8 @@
  * calling an LLM, so offline generation always works.
  */
 
-import type { Locale, PageDef, PageSection, SiteBrief, SiteKind } from "./types";
-import { slug } from "./brief";
+import type { Locale, PageDef, PageSection, SiteBrief, SiteKind } from "./types.ts";
+import { slug } from "./brief.ts";
 
 type L = Record<Locale, string>;
 
@@ -321,7 +321,6 @@ export function planPages(brief: SiteBrief): PageDef[] {
         ];
       case "shop":
       case "landing":
-      case "agency":
       case "personal":
       case "blog":
       case "generic":

@@ -8,7 +8,7 @@
  * defaults so the generator never blocks on missing fields.
  */
 
-import type { Locale, SiteBrief, SiteKind } from "./types";
+import type { Locale, SiteBrief, SiteKind } from "./types.ts";
 
 const KIND_RULES: { kind: SiteKind; patterns: RegExp[] }[] = [
   {
@@ -56,7 +56,7 @@ function detectKind(raw: string): SiteKind {
 }
 
 const SK_MARKERS =
-  /(č|š|ť|ž|ý|á|é|í|ó|ú|ľ|ĺ|ň|ď)|\b(pre|náš|naša|s\ ohľadom|kaviarn|jedálne|obchod|reštaurác|kontakt)\b/i;
+  /(č|š|ť|ž|ý|á|é|í|ó|ú|ľ|ĺ|ň|ď)|\b(pre|náš|naša|s ohľadom|kaviarn|jedálne|obchod|reštaurác|kontakt)\b/i;
 
 function detectLocale(raw: string): Locale {
   return SK_MARKERS.test(raw) ? "sk" : "en";

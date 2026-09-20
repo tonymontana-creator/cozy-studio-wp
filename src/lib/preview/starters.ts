@@ -244,34 +244,6 @@ export const STARTERS: Starter[] = [
       },
     ],
   },
-  {
-    id: "crm",
-    label: "Leady SK",
-    description:
-      "CRM mapa leadov na Slovensku — piny podľa okresu, filtre regiónov a stavov.",
-    prompt:
-      "CRM dashboard pre leady na Slovensku. Hlavný obsah je interaktívna SVG mapa Slovenska s pinmi (nie textový zoznam okresov). Kompaktné súhrnné chips: celé SK 18, Východ 5, Stred 8, Západ 5. Stavy leadov: nový, ozvaný, ponuka, dohodnuté, preč (17 nový, 1 preč). Mestá: Prešov, Humenné, Trebišov, Banská Bystrica, Bardejov, Brezno, Dolný Kubín, Kežmarok, Komárno, Liptovský Mikuláš, Námestovo, Nové Mesto nad Váhom, Nové Zámky, Orava, Prievidza, Ružomberok, Trenčín, Žilina. Filtre región/stav, hover tooltip, detail po kliknutí. Warm paper #f4efe6, ink #1c1915, terracotta #c45c38. UI po slovensky.",
-    addons: [
-      {
-        id: "region-filter",
-        label: "Filter regiónov",
-        description: "Chips Východ / Stred / Západ.",
-        prompt: "Zachovaj filter chips pre regióny Východ, Stred, Západ a všetky.",
-      },
-      {
-        id: "status-filter",
-        label: "Filter stavov",
-        description: "Filtrovanie pinov podľa pipeline stavu.",
-        prompt: "Zachovaj filter chips pre stavy nový, ozvaný, ponuka, dohodnuté, preč.",
-      },
-      {
-        id: "pin-detail",
-        label: "Detail pinu",
-        description: "Sidebar s detailom po kliknutí.",
-        prompt: "Po kliknutí na pin zobraz detail: mesto, región, stav.",
-      },
-    ],
-  },
 ];
 
 export function getStarterById(id: string): Starter | undefined {

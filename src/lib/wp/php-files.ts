@@ -8,7 +8,7 @@
  * self-consistent from install → activate.
  */
 
-import type { DesignSystem, SiteBrief } from "./types";
+import type { DesignSystem, SiteBrief } from "./types.ts";
 
 export function styleCss(brief: SiteBrief, design: DesignSystem, textDomain: string, version: string): string {
   const paletteVars = Object.entries(design.palette)

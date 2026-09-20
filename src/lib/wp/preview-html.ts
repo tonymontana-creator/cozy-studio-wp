@@ -8,9 +8,9 @@
  * after theme activation. Tab-style page switcher is inline JS, no libs.
  */
 
-import type { DesignSystem, PageDef, PageSection, SiteBrief } from "./types";
-import { spaceScaleRem, typeScaleRem } from "./design-system";
-import { buildFaviconDataUri } from "./favicon";
+import type { DesignSystem, PageDef, PageSection, SiteBrief } from "./types.ts";
+import { spaceScaleRem, typeScaleRem } from "./design-system.ts";
+import { buildFaviconDataUri } from "./favicon.ts";
 
 function esc(s: string): string {
   return String(s)

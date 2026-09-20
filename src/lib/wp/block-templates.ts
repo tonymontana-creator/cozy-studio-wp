@@ -8,7 +8,7 @@
  * `hasSpacing / align="full"` conventions that match the theme.json above.
  */
 
-import type { PageDef, PageSection, SiteBrief } from "./types";
+import type { PageDef, PageSection, SiteBrief } from "./types.ts";
 
 /* ---------------- Encoding helpers ---------------- */
 

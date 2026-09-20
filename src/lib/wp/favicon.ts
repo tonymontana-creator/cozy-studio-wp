@@ -17,7 +17,7 @@
  * touches the origin root and the console stays clean.
  */
 
-import type { ColorPalette } from "./types";
+import type { ColorPalette } from "./types.ts";
 
 /** Parse `#rrggbb` (or `#rgb`) to `{r,g,b}` bytes. Falls back to neutral gray. */
 function parseHex(hex: string): { r: number; g: number; b: number } {

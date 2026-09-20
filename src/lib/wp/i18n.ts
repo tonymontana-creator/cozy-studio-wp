@@ -7,7 +7,7 @@
  * but the theme is immediately usable in SK without extra tooling.
  */
 
-import type { SiteBrief } from "./types";
+import type { SiteBrief } from "./types.ts";
 
 type Entry = { msgid: string; msgstr: string };
 

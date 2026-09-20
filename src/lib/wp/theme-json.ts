@@ -7,8 +7,8 @@
  * onto core block elements so a fresh install looks correct out of the box.
  */
 
-import type { DesignSystem, SiteBrief } from "./types";
-import { spaceScaleRem, typeScaleRem } from "./design-system";
+import type { DesignSystem, SiteBrief } from "./types.ts";
+import { spaceScaleRem, typeScaleRem } from "./design-system.ts";
 
 export function buildThemeJson(design: DesignSystem, brief: SiteBrief): object {
   const t = typeScaleRem(design.typography);

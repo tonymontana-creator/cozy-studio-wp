@@ -8,13 +8,13 @@
  * an installable ZIP through `bundleThemeZip`.
  */
 
-import { slug, parseBrief } from "./brief";
+import { slug, parseBrief } from "./brief.ts";
 import {
   DESIGN_PRESETS,
   getDesignPreset,
-} from "./design-system";
-import { planPages } from "./pages";
-import { buildThemeJson } from "./theme-json";
+} from "./design-system.ts";
+import { planPages } from "./pages.ts";
+import { buildThemeJson } from "./theme-json.ts";
 import {
   footerHtml,
   headerHtml,
@@ -23,26 +23,26 @@ import {
   pageTemplateHtml,
   singleTemplate,
   siteTemplate,
-} from "./block-templates";
+} from "./block-templates.ts";
 import {
   functionsPhp,
   indexPhp,
   readmeTxt,
   screenshotSvg,
   styleCss,
-} from "./php-files";
-import { buildFaviconIco, buildIconSvg } from "./favicon";
-import { potFile, skPoFile } from "./i18n";
-import { auditA11y, auditSeo } from "./seo-a11y";
-import { renderPreviewHtml } from "./preview-html";
-import { buildZip, type ZipEntry } from "./zip";
+} from "./php-files.ts";
+import { buildFaviconIco, buildIconSvg } from "./favicon.ts";
+import { potFile, skPoFile } from "./i18n.ts";
+import { auditA11y, auditSeo } from "./seo-a11y.ts";
+import { renderPreviewHtml } from "./preview-html.ts";
+import { buildZip, type ZipEntry } from "./zip.ts";
 import type {
   DesignSystem,
   PageDef,
   SiteBrief,
   WpFile,
   WpTheme,
-} from "./types";
+} from "./types.ts";
 
 export type GenerateOptions = {
   designPresetId?: string;
