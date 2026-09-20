@@ -11,3 +11,6 @@ data/pglite/
 .tanstack/
 .output/
 .vinxi/
+.vercel/
+.grok/og-pending/
+.grok/og-pending
